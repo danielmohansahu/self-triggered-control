@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+
+from models.jet_engine import JetEngine
+
+if __name__ == "__main__":
+    # construct JetEngine class
+
+    print("Constructing jet engine model.")
+    model = JetEngine();
+
+    print("Simulation complete.")
