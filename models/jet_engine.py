@@ -1,51 +1,59 @@
 import numpy as np
-from scipy.integrate import odeint
-import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
 
 # stub implementation of JetEngine model
 class JetEngine:
-    def __init__(self):
-        ...
-        
+    def __init__(self, initial_conditions):
+        self.initial_conditions = np.array(initial_conditions)
+        self.state = self.initial_conditions
+        # the following _should_ just cancel out
+        self.beta = 1
 
-    def plot(self, duration = 3, initial_conditions = [5.37, 0.34]):
-        """ Plot the time response of the system.
+    def reset(self):
+        """ Clear current state
         """
-        # convert initial conditions to x1,y coordinates
-        ic = [initial_conditions[0], self.X2toY(initial_conditions[0], initial_conditions[1])]
+        self.state = self.initial_conditions
 
-        # solve for the response
-        times = np.linspace(0, duration, 100)
-        response = odeint(self.ode, ic, times)
+    def getState(self):
+        """ Return the current model state.
+        """
+        return self.state
 
-        # convert result back into x1,x2 coordinates
-        for resp in response:
-            resp[1] = self.YtoX2(resp[0], resp[1])
+    def applyCommand(self, command, period):
+        """ Determine our response to the given command over the given period
+        """
+        print(command)
+        # update our closed loop response with the given command
+        def ode(time, state):
+            x1 = state[0]
+            x2 = state[1]
+            dx1 = -x2 - 1.5 * x1**2 - 0.5 * x1**3
+            dx2 = (x1 - command) / (self.beta**2)
+            return [dx1, dx2]
+        
+        # solve for the response over the given time period
+        ic = self.state
 
-        # plot the response
-        plt.plot(times, response[:, 0])
-        plt.plot(times, response[:, 1])
-        plt.xlabel("Time (s)")
-        plt.ylabel("State")
-        plt.legend(["x1", "x2"])
-        plt.show()
+        # solve for the response and update our state
+        self.state = solve_ivp(ode, (0, period), ic).y[:,1]
 
-    def X2toY(self, x1, x2):
+    def calculateCommand(self, state):
+        """ Calculate the control for the given state.
+        """
+        x1 = state[0]
+        x2 = state[1]
+        y = self.X2toY(x1, x2)
+        return x1 - 0.5 * (x1**2 + 1) * (y + y * x1**2 + x1 * y**2) * self.beta**2 + 2 * x1 * self.beta**2
+
+    @staticmethod
+    def X2toY(x1, x2):
         """ Mapping from x2 to y coordinates.
         """
         return 2 * (x1**2 + x2) / (x1**2 + 1)
 
-    def YtoX2(self, x1, y):
+    @staticmethod
+    def YtoX2(x1, y):
         """ Mapping from y to x2 coordinates.
         """
         return 0.5 * y * (x1**2 + 1) - x1**2
-
-    def ode(self, state, time):
-        """ The ODE determining the state of the system.
-        """
-        x1 = state[0]
-        y = state[1]
-        dx1 = -0.5 * (x1**2 + 1) * (x1 + y)
-        dy = -(x1**2 + 1) * y
-        return [dx1, dy]
 
