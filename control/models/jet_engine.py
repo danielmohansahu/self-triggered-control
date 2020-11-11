@@ -59,6 +59,17 @@ class JetEngine:
         return 0.5 * y * (x1**2 + 1) - x1**2
 
     @classmethod
+    def triggerCondition(cls, x1, x2):
+        """ Calculate the next time at which control should be executed
+        """
+        y = cls.X2toY(x1, x2)
+        norm = np.math.sqrt(x1**2 + y**2)
+
+        # calculate next trigger step
+        dt = (29 * x1 + norm**2) / (5.36 * norm * x1**2 + norm**2) - 0.00763
+        return dt
+
+    @classmethod
     def analogResponse(cls, duration, initial_conditions, times):
         """ Solve for the "perfect world" response (i.e. non-digital)
         """
