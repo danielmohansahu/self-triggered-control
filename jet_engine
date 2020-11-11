@@ -11,10 +11,10 @@ if __name__ == "__main__":
     model = JetEngine([5.37, 0.34])
 
     print ("Constructing periodic controller.")
-    controller = PeriodicController(0.0001, model, model.calculateCommand)
+    controller = PeriodicController(0.01, model, model.calculateCommand)
 
     print("Simulating...")
-    times, response = controller.execute(0.1)
+    times, response = controller.execute(3)
 
     # plot the response
     plt.plot(times, response[:, 0])

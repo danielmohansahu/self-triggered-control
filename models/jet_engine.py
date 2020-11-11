@@ -22,7 +22,6 @@ class JetEngine:
     def applyCommand(self, command, period):
         """ Determine our response to the given command over the given period
         """
-        print(command)
         # update our closed loop response with the given command
         def ode(time, state):
             x1 = state[0]

@@ -40,7 +40,6 @@ class PeriodicController:
 
             # calculate control for this state
             u = self.control(state)
-            import pdb;pdb.set_trace()
             self.model.applyCommand(u, self.period)
 
             # increment time
