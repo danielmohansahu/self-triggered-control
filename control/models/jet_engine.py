@@ -66,7 +66,7 @@ class JetEngine:
         norm = np.math.sqrt(x1**2 + y**2)
 
         # calculate next trigger step
-        dt = (29 * x1 + norm**2) / (5.36 * norm * x1**2 + norm**2) - 0.00763
+        dt = (29 * x1 + norm**2) / (5.36 * norm * x1**2 + norm**2) * 0.00763
         return dt
 
     @classmethod
