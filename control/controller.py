@@ -2,7 +2,7 @@
 """
 import numpy as np
 
-class PeriodicController:
+class Controller:
     def __init__(self, period, model, control):
         # the time period at which to execute 
         self.period = period
@@ -13,7 +13,7 @@ class PeriodicController:
         # the control law to apply
         self.control = control
 
-    def execute(self, duration):
+    def execute_periodic(self, duration):
         """ Apply the periodic control law to the given model.
         """
         # initialize time
