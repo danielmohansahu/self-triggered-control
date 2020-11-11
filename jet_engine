@@ -1,12 +1,25 @@
 #!/usr/bin/env python3
 
+import matplotlib.pyplot as plt
 from models.jet_engine import JetEngine
+from controller.periodic import PeriodicController
 
 if __name__ == "__main__":
     # construct JetEngine class
 
     print("Constructing jet engine model.")
-    model = JetEngine();
+    model = JetEngine([5.37, 0.34])
 
-    print("Simulation complete.")
-    model.plot()
+    print ("Constructing periodic controller.")
+    controller = PeriodicController(0.0001, model, model.calculateCommand)
+
+    print("Simulating...")
+    times, response = controller.execute(0.1)
+
+    # plot the response
+    plt.plot(times, response[:, 0])
+    plt.plot(times, response[:, 1])
+    plt.xlabel("Time (s)")
+    plt.ylabel("State")
+    plt.legend(["x1", "x2"])
+    plt.show()
