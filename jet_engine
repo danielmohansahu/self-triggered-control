@@ -1,23 +1,27 @@
 #!/usr/bin/env python3
 
 import matplotlib.pyplot as plt
-from models.jet_engine import JetEngine
-from controller.periodic import PeriodicController
+from control.models.jet_engine import JetEngine
+from control.controller import Controller
+
+INITIAL_CONDITIONS = [5.37, 0.34]
+T_FINAL = 3.0
+PERIOD = 0.01
 
 if __name__ == "__main__":
     # construct JetEngine class
 
     print("Constructing jet engine model.")
-    model = JetEngine([5.37, 0.34])
+    model = JetEngine(INITIAL_CONDITIONS)
 
     print ("Constructing periodic controller.")
-    controller = PeriodicController(0.01, model, model.calculateCommand)
+    controller = Controller(PERIOD, model, model.calculateCommand)
 
     print("Simulating...")
-    t_periodic, r_periodic = controller.execute(3)
+    t_periodic, r_periodic = controller.execute_periodic(T_FINAL)
 
     # also get the analog "perfect world" respone
-    t_perfect, r_perfect = model.analogResponse(3, [5.37, 0.34], t_periodic)
+    t_perfect, r_perfect = model.analogResponse(T_FINAL, INITIAL_CONDITIONS, t_periodic)
 
     # plot the response
     plt.plot(t_perfect, r_perfect[:, 0], 'b')
