@@ -14,12 +14,17 @@ if __name__ == "__main__":
     controller = PeriodicController(0.01, model, model.calculateCommand)
 
     print("Simulating...")
-    times, response = controller.execute(3)
+    t_periodic, r_periodic = controller.execute(3)
+
+    # also get the analog "perfect world" respone
+    t_perfect, r_perfect = model.analogResponse(3, [5.37, 0.34], t_periodic)
 
     # plot the response
-    plt.plot(times, response[:, 0])
-    plt.plot(times, response[:, 1])
+    plt.plot(t_perfect, r_perfect[:, 0], 'b')
+    plt.plot(t_perfect, r_perfect[:, 1], 'r')
+    plt.plot(t_periodic, r_periodic[:, 0], 'b*', markersize = 1)
+    plt.plot(t_periodic, r_periodic[:, 1], 'r*', markersize = 1)
     plt.xlabel("Time (s)")
     plt.ylabel("State")
-    plt.legend(["x1", "x2"])
+    plt.legend(["x1 (perfect)", "x2 (perfect)", "x1 (periodic)", "x2 (periodic)"])
     plt.show()
