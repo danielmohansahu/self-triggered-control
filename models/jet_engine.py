@@ -42,7 +42,8 @@ class JetEngine:
         x1 = state[0]
         x2 = state[1]
         y = self.X2toY(x1, x2)
-        return x1 - 0.5 * (x1**2 + 1) * (y + y * x1**2 + x1 * y**2) * self.beta**2 + 2 * x1 * self.beta**2
+        # return x1 - 0.5 * (x1**2 + 1) * (y + y * x1**2 + x1 * y**2) * self.beta**2 + 2 * x1 * self.beta**2
+        return x1 + 0.5 * self.beta**2 * (x1**2 + 1) * (2 * x1**2 * y + y + x1 * y**2 - 2 * x1**2 - 2 * x1 * y)
 
     @staticmethod
     def X2toY(x1, x2):
