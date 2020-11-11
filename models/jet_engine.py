@@ -43,6 +43,7 @@ class JetEngine:
         x2 = state[1]
         y = self.X2toY(x1, x2)
         # return x1 - 0.5 * (x1**2 + 1) * (y + y * x1**2 + x1 * y**2) * self.beta**2 + 2 * x1 * self.beta**2
+        # re-derived; the above appears to be incorrect in the paper
         return x1 + 0.5 * self.beta**2 * (x1**2 + 1) * (2 * x1**2 * y + y + x1 * y**2 - 2 * x1**2 - 2 * x1 * y)
 
     @staticmethod
@@ -57,3 +58,33 @@ class JetEngine:
         """
         return 0.5 * y * (x1**2 + 1) - x1**2
 
+    @classmethod
+    def analogResponse(cls, duration, initial_conditions, times):
+        """ Solve for the "perfect world" response (i.e. non-digital)
+        """
+        def ode(time, state):
+            x1 = state[0]
+            y = state[1]
+            dx1 = -0.5 * (x1**2 + 1) * (x1 + y)
+            dy = -(x1**2 + 1) * y
+            return [dx1, dy]
+        
+        # solve for the response over the given time period
+        ic = np.array([initial_conditions[0], cls.X2toY(initial_conditions[0], initial_conditions[1])])
+
+        # solve for the response and update our state
+        response = solve_ivp(ode, (times[0], times[-1]), ic, t_eval=times)
+
+        # convert back to x1, x2 coordinates
+        state = None
+        for i in range(0, response.y.shape[1]):
+            x1 = response.y[:,i][0]
+            y = response.y[:,i][1]
+            x2 = cls.YtoX2(x1, y)
+
+            if state is None:
+                state = np.array([x1, x2])
+            else:
+                state = np.vstack([state, np.array([x1, x2])])
+
+        return response.t, state
