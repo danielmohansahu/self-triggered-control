@@ -4,13 +4,12 @@ import matplotlib.pyplot as plt
 from control.models.jet_engine import JetEngine
 from control.controller import Controller
 
-INITIAL_CONDITIONS = [5.37, 0.34]
+INITIAL_CONDITIONS = [5.37, JetEngine.YtoX2(5.37, 0.34)]
 T_FINAL = 3.0
 PERIOD = 0.01
 
 if __name__ == "__main__":
     # construct JetEngine class
-
     print("Constructing jet engine model.")
     model = JetEngine(INITIAL_CONDITIONS)
 
@@ -37,4 +36,5 @@ if __name__ == "__main__":
     plt.xlabel("Time (s)")
     plt.ylabel("State")
     plt.legend(["x1 (perfect)", "x2 (perfect)", "x1 (periodic)", "x2 (periodic)", "x1 (trigger)", "x2 (trigger)"])
+    plt.grid(True)
     plt.show()
