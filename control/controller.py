@@ -10,7 +10,7 @@ class Controller:
         # the control law to apply
         self.control = control
 
-    def execute(self, duration, trigger_condition):
+    def execute(self, duration, trigger_condition, disturbance=None):
         """ Apply self-triggered control law to the given model.
         """
         # initialize loop variables
@@ -18,6 +18,10 @@ class Controller:
         t = 0
         times = []
         response = None
+
+        # check if we're supposed to have a disturbance
+        if disturbance is not None and len(disturbance) != 2:
+            raise RuntimeError("Disturbance must be of form [time, (s1, s2, ...)]")
 
         # execute until duration is over
         while (t <= duration):
@@ -37,7 +41,11 @@ class Controller:
             # get next trigger
             dt = trigger_condition(state)
 
-            self.model.applyCommand(u, dt)
+            if disturbance is not None and disturbance[0] < t:
+                self.model.applyCommand(u, dt, disturbance[1])
+                disturbance = None
+            else:
+                self.model.applyCommand(u, dt)
 
             # increment time
             t += dt

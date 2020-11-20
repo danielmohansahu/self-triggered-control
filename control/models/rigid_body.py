@@ -20,10 +20,9 @@ class RigidBody:
     def getState(self):
         """ Return the current model state.
         """
-        result = [self.state[0] + self.noise(), self.state[1] + self.noise(), self.state[2] + self.noise()]
-        return result
+        return self.state
 
-    def applyCommand(self, command, period):
+    def applyCommand(self, command, period, disturbance=None):
         """ Determine our response to the given command over the given period
         """
         # update our closed loop response with the given command
@@ -38,6 +37,13 @@ class RigidBody:
         # solve for the response and update our state
         self.state = solve_ivp(ode, (0, period), ic).y[:,1]
 
+        # add noise
+        self.state = np.array([s + self.noise() for s in self.state])
+
+        # add disturbance (perturbation)
+        if disturbance is not None:
+            self.state += disturbance
+        
     def calculateCommand(self, state):
         """ Calculate the control for the given state.
         """
