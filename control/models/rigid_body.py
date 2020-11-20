@@ -5,9 +5,12 @@ class RigidBody:
     tau_periodic = 4.5 * 10e-5
     tau_trigger = 0.0051
 
-    def __init__(self, initial_conditions):
+    def __init__(self, initial_conditions, noise_stddev=0):
         self.initial_conditions = np.array(initial_conditions)
         self.state = self.initial_conditions
+
+        # if desired, inject noise into the response
+        self.noise = lambda : np.random.normal(0, noise_stddev)
 
     def reset(self):
         """ Clear current state
@@ -17,7 +20,8 @@ class RigidBody:
     def getState(self):
         """ Return the current model state.
         """
-        return self.state
+        result = [self.state[0] + self.noise(), self.state[1] + self.noise(), self.state[2] + self.noise()]
+        return result
 
     def applyCommand(self, command, period):
         """ Determine our response to the given command over the given period
