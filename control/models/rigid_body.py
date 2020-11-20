@@ -42,10 +42,10 @@ class RigidBody:
         return [u1, u2]
 
     @classmethod
-    def triggerCondition(cls, x1, x2, x3):
+    def triggerCondition(cls, state):
         """ Calculate the next time at which control should be executed
         """
-        return 0.01
+        return 0.0051 / (1 + np.linalg.norm(state) ** 2)
 
     @classmethod
     def analogResponse(cls, duration, initial_conditions, times):
@@ -61,5 +61,5 @@ class RigidBody:
             return [dx1, dx2, dx3]
         
         # solve for the response and update our state
-        response = solve_ivp(ode, (times[0], times[-1]), initial_conditions)
+        response = solve_ivp(ode, (times[0], times[-1]), initial_conditions, t_eval=times)
         return response.t, response.y

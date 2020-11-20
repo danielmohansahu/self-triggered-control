@@ -59,9 +59,10 @@ class JetEngine:
         return 0.5 * y * (x1**2 + 1) - x1**2
 
     @classmethod
-    def triggerCondition(cls, x1, x2):
+    def triggerCondition(cls, state):
         """ Calculate the next time at which control should be executed
         """
+        x1, x2 = state
         y = cls.X2toY(x1, x2)
         norm = np.math.sqrt(x1**2 + y**2)
 

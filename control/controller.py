@@ -65,7 +65,7 @@ class Controller:
             u = self.control(state)
 
             # get next trigger
-            dt = trigger_condition(state[0], state[1])
+            dt = trigger_condition(state)
 
             self.model.applyCommand(u, dt)
 
