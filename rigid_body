@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import numpy as np
 import matplotlib.pyplot as plt
 from control.models.rigid_body import RigidBody
 from control.controller import Controller
@@ -26,6 +27,7 @@ if __name__ == "__main__":
     t_perfect, r_perfect = model.analogResponse(T_FINAL, INITIAL_CONDITIONS, t_periodic)
 
     # plot the response
+    plt.figure("State Response")
     plt.plot(t_perfect, r_perfect[0,:], 'b')
     plt.plot(t_perfect, r_perfect[1,:], 'r')
     plt.plot(t_perfect, r_perfect[2,:], 'k')
@@ -39,4 +41,17 @@ if __name__ == "__main__":
     plt.ylabel("State")
     plt.legend(["x1 (perfect)", "x2 (perfect)", "x3 (perfect)", "x1 (periodic)", "x2 (periodic)", "x3 (periodic)", "x1 (trigger)", "x2 (trigger)", "x3 (trigger)"])
     plt.grid(True)
+
+    ### duplicate other paper plots
+
+    # compare inter-execution time of self-triggered vs. periodic
+    plt.figure("Inter-Execution Times")
+    plt.plot(t_trigger[1:], np.diff(t_trigger), "b.", markersize=1)
+    plt.plot(t_periodic[1:], np.diff(t_periodic), "orange")
+    plt.xlabel("Time (s)")
+    plt.ylabel("State")
+    plt.legend(["self-triggered", "periodic"])
+    plt.grid(True)
+
+
     plt.show()
