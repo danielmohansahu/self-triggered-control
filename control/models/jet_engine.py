@@ -3,6 +3,9 @@ from scipy.integrate import solve_ivp
 
 # stub implementation of JetEngine model
 class JetEngine:
+    # minimum Tau* from paper (also used as safe periodic timestep)
+    tau_min = 0.00763
+
     def __init__(self, initial_conditions):
         self.initial_conditions = np.array(initial_conditions)
         self.state = self.initial_conditions
@@ -59,6 +62,12 @@ class JetEngine:
         return 0.5 * y * (x1**2 + 1) - x1**2
 
     @classmethod
+    def periodicCondition(cls, state):
+        """ Calculate the next time at which control should be executed
+        """
+        return cls.tau_min
+
+    @classmethod
     def triggerCondition(cls, state):
         """ Calculate the next time at which control should be executed
         """
@@ -67,7 +76,7 @@ class JetEngine:
         norm = np.math.sqrt(x1**2 + y**2)
 
         # calculate next trigger step
-        dt = (29 * x1 + norm**2) / (5.36 * norm * x1**2 + norm**2) * 0.00763
+        dt = (29 * x1 + norm**2) / (5.36 * norm * x1**2 + norm**2) * cls.tau_min
         return dt
 
     @classmethod
