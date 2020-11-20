@@ -2,8 +2,8 @@ import numpy as np
 from scipy.integrate import solve_ivp
 
 class RigidBody:
-    # minimum Tau* from paper (also used as safe periodic timestep)
-    tau_min = 0.0051
+    tau_periodic = 4.5 * 10e-5
+    tau_trigger = 0.0051
 
     def __init__(self, initial_conditions):
         self.initial_conditions = np.array(initial_conditions)
@@ -48,13 +48,13 @@ class RigidBody:
     def periodicCondition(cls, state):
         """ Calculate the next time at which control should be executed
         """
-        return cls.tau_min
+        return cls.tau_periodic
 
     @classmethod
     def triggerCondition(cls, state):
         """ Calculate the next time at which control should be executed
         """
-        return cls.tau_min / (1 + np.linalg.norm(state) ** 2)
+        return cls.tau_trigger / (1 + np.linalg.norm(state) ** 2)
 
     @classmethod
     def analogResponse(cls, duration, initial_conditions, times):
