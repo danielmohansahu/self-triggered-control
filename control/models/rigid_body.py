@@ -21,10 +21,9 @@ class RigidBody:
         """
         # update our closed loop response with the given command
         def ode(time, state):
-            x1 = state[0]
-            x2 = state[1]
-            x3 = state[2]
-            return [1, 1, 1]
+            x1, x2, _ = state
+            u1, u2 = command
+            return [u1, u2, x1*x2]
         
         # solve for the response over the given time period
         ic = self.state
@@ -38,7 +37,9 @@ class RigidBody:
         x1 = state[0]
         x2 = state[1]
         x3 = state[2]
-        return 1
+        u1 = -x1 * x2 - 2 * x2 * x3 - x1 - x3
+        u2 = 2 * x1 * x2 * x3 + 3 * x3**2 - x2
+        return [u1, u2]
 
     @classmethod
     def triggerCondition(cls, x1, x2, x3):
@@ -61,7 +62,4 @@ class RigidBody:
         
         # solve for the response and update our state
         response = solve_ivp(ode, (times[0], times[-1]), initial_conditions)
-
-        import pdb;pdb.set_trace()
-
         return response.t, response.y

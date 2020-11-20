@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     print("Simulating...")
     # get the periodic response
-    # t_periodic, r_periodic = controller.executePeriodic(T_FINAL, PERIOD)
+    t_periodic, r_periodic = controller.executePeriodic(T_FINAL, PERIOD)
 
     # get the self-triggered response
     # t_trigger, r_trigger = controller.executeTrigger(T_FINAL, model.triggerCondition)
@@ -30,8 +30,9 @@ if __name__ == "__main__":
     plt.plot(t_perfect, r_perfect[0,:], 'b')
     plt.plot(t_perfect, r_perfect[1,:], 'r')
     plt.plot(t_perfect, r_perfect[2,:], 'k')
-    # plt.plot(t_periodic, r_periodic[:, 0], 'b*', markersize = 1)
-    # plt.plot(t_periodic, r_periodic[:, 1], 'r*', markersize = 1)
+    plt.plot(t_periodic, r_periodic[:, 0], 'b*', markersize = 1)
+    plt.plot(t_periodic, r_periodic[:, 1], 'r*', markersize = 1)
+    plt.plot(t_periodic, r_periodic[:, 2], 'k*', markersize = 1)
     # plt.plot(t_trigger, r_trigger[:, 0], 'b+', markersize = 5)
     # plt.plot(t_trigger, r_trigger[:, 1], 'r+', markersize = 5)
     plt.xlabel("Time (s)")
