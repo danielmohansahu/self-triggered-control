@@ -22,7 +22,7 @@ class RigidBody:
         """
         return self.state
 
-    def applyCommand(self, command, period, disturbance=None):
+    def applyCommand(self, command, period):
         """ Determine our response to the given command over the given period
         """
         # update our closed loop response with the given command
@@ -39,10 +39,6 @@ class RigidBody:
 
         # add noise
         self.state = np.array([s + self.noise() for s in self.state])
-
-        # add disturbance (perturbation)
-        if disturbance is not None:
-            self.state += disturbance
         
     def calculateCommand(self, state):
         """ Calculate the control for the given state.

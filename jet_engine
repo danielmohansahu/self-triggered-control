@@ -6,9 +6,14 @@ from control.models.jet_engine import JetEngine
 from control.controller import Controller
 
 INITIAL_CONDITIONS = [5.37, JetEngine.YtoX2(5.37, 0.34)]
-T_FINAL = 3.0
+T_FINAL = 3
 
 if __name__ == "__main__":
+
+    ###############################################################################################
+    ################################# Figure #1 Replication #######################################
+    ###############################################################################################
+
     # construct JetEngine class
     print("Constructing jet engine model.")
     model = JetEngine(INITIAL_CONDITIONS)
@@ -22,6 +27,7 @@ if __name__ == "__main__":
 
     # get the self-triggered response
     t_trigger, r_trigger = controller.execute(T_FINAL, model.triggerCondition)
+    t_trigger_clean = t_trigger # save for future plots
 
     # also get the analog "perfect world" respone
     t_perfect, r_perfect = model.analogResponse(T_FINAL, INITIAL_CONDITIONS, t_periodic)
@@ -40,12 +46,60 @@ if __name__ == "__main__":
     plt.xlim([0, T_FINAL])
     plt.grid(True)
 
+    ###############################################################################################
+    ################################# Figure #2 Replication #######################################
+    ###############################################################################################
+
     # plot the inter-execution times
     plt.figure("Inter-execution Times")
     plt.plot(t_periodic[1:], np.diff(t_periodic), 'b')
     plt.plot(t_trigger[1:], np.diff(t_trigger), '--r')
     plt.xlabel("Time (s)")
     plt.legend(["periodic", "self-triggered"])
+    plt.xlim([0, T_FINAL])
+    plt.grid(True)
+
+    ###############################################################################################
+    ################################# Figure #3 Replication #######################################
+    ###############################################################################################
+
+    # get the system response with noise and perturbations
+    model = JetEngine(INITIAL_CONDITIONS, 0.05)
+    controller = Controller(model, model.calculateCommand)
+
+    # get the responses with a perturbation around ~0.7 seconds
+    t_periodic, r_periodic = controller.execute(T_FINAL, model.periodicCondition, [0.7, 200])
+    t_trigger, r_trigger = controller.execute(T_FINAL, model.triggerCondition, [0.7, 200])
+
+    # plot the noisy / perturbed response
+    plt.figure("Jet Engine Perturbed Response")
+    plt.plot(t_periodic, r_periodic[:, 0], 'b')
+    plt.plot(t_periodic, r_periodic[:, 1], 'r')
+    plt.plot(t_trigger, r_trigger[:, 0], '--b')
+    plt.plot(t_trigger, r_trigger[:, 1], '--r')
+    plt.xlabel("Time (s)")
+    plt.ylabel("State")
+    plt.legend(["x1 (periodic)", "x2 (periodic)", "x1 (trigger)", "x2 (trigger)"])
+    plt.xlim([0, T_FINAL])
+    plt.grid(True)
+
+    ###############################################################################################
+    ################################# Figure #4 Replication #######################################
+    ###############################################################################################
+
+    # get the system response with no noise and perturbation
+    model = JetEngine(INITIAL_CONDITIONS)
+    controller = Controller(model, model.calculateCommand)
+
+    # get the responses with a perturbation around ~0.7 seconds
+    t_trigger, r_trigger = controller.execute(T_FINAL, model.triggerCondition, [0.7, 200])
+
+    # plot the inter-execution times
+    plt.figure("Noisy Inter-execution Times")
+    plt.plot(t_trigger[1:], np.diff(t_trigger), 'b')
+    plt.plot(t_trigger_clean[1:], np.diff(t_trigger_clean), '--r')
+    plt.xlabel("Time (s)")
+    plt.legend(["disturbance at t=0.7s", "no disturbance"])
     plt.xlim([0, T_FINAL])
     plt.grid(True)
 

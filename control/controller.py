@@ -21,7 +21,7 @@ class Controller:
 
         # check if we're supposed to have a disturbance
         if disturbance is not None and len(disturbance) != 2:
-            raise RuntimeError("Disturbance must be of form [time, (s1, s2, ...)]")
+            raise RuntimeError("Disturbance must be of form [time, value]")
 
         # execute until duration is over
         while (t <= duration):
@@ -42,10 +42,10 @@ class Controller:
             dt = trigger_condition(state)
 
             if disturbance is not None and disturbance[0] < t:
-                self.model.applyCommand(u, dt, disturbance[1])
+                u += disturbance[1]
                 disturbance = None
-            else:
-                self.model.applyCommand(u, dt)
+ 
+            self.model.applyCommand(u, dt)
 
             # increment time
             t += dt

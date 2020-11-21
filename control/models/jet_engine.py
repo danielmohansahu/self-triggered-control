@@ -9,12 +9,10 @@ class JetEngine:
     def __init__(self, initial_conditions, noise_stddev=0.0):
         self.initial_conditions = np.array(initial_conditions)
         self.state = self.initial_conditions
+        self.noise_stddev = noise_stddev
 
         # the following _should_ just cancel out
         self.beta = 1
-
-        # if desired, inject noise into the response
-        self.noise = lambda : np.random.normal(0, noise_stddev)
 
     def reset(self):
         """ Clear current state
@@ -26,7 +24,7 @@ class JetEngine:
         """
         return self.state
 
-    def applyCommand(self, command, period, disturbance=None):
+    def applyCommand(self, command, period):
         """ Determine our response to the given command over the given period
         """
         # update our closed loop response with the given command
@@ -44,11 +42,7 @@ class JetEngine:
         self.state = solve_ivp(ode, (0, period), ic).y[:,1]
 
         # add noise
-        self.state = np.array([s + self.noise() for s in self.state])
-
-        # add disturbance (perturbation)
-        if disturbance is not None:
-            self.state += disturbance
+        self.state = np.array([s + np.random.normal(0, abs(s*self.noise_stddev)) for s in self.state])
 
     def calculateCommand(self, state):
         """ Calculate the control for the given state.
